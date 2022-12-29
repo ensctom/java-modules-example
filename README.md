@@ -2,37 +2,50 @@
 Intro to java modules
 
 Since java 9, introduced one of key feature to the java ecosystem. JPMS (java platform modules system) helps developers maintain 
-a grouping of packages into a modules, as well as common resources such as images, xml files, config files, etc. Modules are very explicit in what dependencies are introduced and introduces some strong encapsulation 
+a grouping of packages into a modules, as well as common resources such as images, xml files, config files, etc.
+A module is a set of packages designed for reuse. It offers strong encapsulation so that a module are explicit in what they want to expose while 
+keeping its internals concealed from external use.
+
+![img.png](img.png)
+
+The blue parts are the exported packages while the red is concealed packages.
+All publically exposed classes & methods are accessible only if they blue parts are exported outside of java base
+All concealed packages, even if they are have the public modifier are not accessible outside of its package and are only accessile within java base 
 
 To see all base modules in jdk use `java --list-modules` command
 
 The goal of modules 
--  reducing run time size. You only need to import what packages your application needs instead.
-Pre java 9 the, the JRE was a monolith and included run time packages that were irrelevant to your actually application
-which causes bloat. For example oracle jdk 8 includes javafx which is not required for non gui driven applications
-- With modules, you can restrict access to which apis are available vs hidden
+- scalable platform
+  - Pre java 9 the Java platform was a monolith and included run time packages that might be irrelevant to your actually application. Now with java 9, you can create custom run times specific to your application. For example oracle jdk 8 includes javafx which is not required for non GUI driven applications
+- optimzation
+  -  optimization techniques can be more effective when it is known that a class can refer only to classes in a few other specific components rather than to any class loaded at run time.
+- Strong encapsulation
+   ![img_1.png](img_1.png)
+  - The packages in a module are accessible to other modules only if the module explicitly exports them. Even then, another module cannot use those packages unless it explicitly states that it requires the other module’s capabilities. This improves platform security because fewer classes are accessible to potential attackers.
+  - Before Java 9, it was possible to use many classes in the platform that were not meant for use by an app’s classes. With strong encapsulation, these internal APIs are truly encapsulated and hidden from apps using the platform. This can make migrating legacy code to modularized Java 9 problematic if your code depends on internal APIs.
+- reliable dependencies
+  - Developers have long suffered with the brittle, error-prone class-path mechanism for configuring program components. The class path cannot express relationships between components, so if a necessary component is missing then that will not be discovered until an attempt is made to use it. The class path also allows classes in the same package to be loaded from different components, leading to unpredictable behavior and difficult-to-diagnose errors. The proposed specification will allow a component to declare that it depends upon other components, as other components depend upon it.
 
-# In Java, there are five types of modules:
+
+
+# Four types of modules:
 
 ## Automatic modules:
- These are modules that are created from regular JAR files that do not have a module-info.java file. Automatic modules have a name that is derived from the name of the JAR file and can access all other modules in the application.
+These are unofficial modules by adding existing JAR files to the module path. 
 
-An automatic module derives its name using a two-step process:
+An automatic module derives its name in 2 ways
 
-If the JAR defines the Automatic-Module-Name header in its `MANIFEST.MF, then that property defines the module’s name.
-Alternately, the JAR file name is used to determine the name. The second approach is intrinsically unstable, so no modules with a dependency on such an automatic module should be published in public Maven repositories.
+- If the JAR defines the Automatic-Module-Name header in its `MANIFEST.MF, then that property defines the module’s name.
+- Alternately, the JAR file name is used to determine the name. 
 
-## Named modules: 
-These are modules that have a module-info.java file and a unique, explicit name. Named modules can specify the packages they expose to other modules, as well as the modules they depend on.
+## Application Modules 
+These modules are what we usually want to build when we decide to use Modules. They are named and defined in the compiled module-info.class file included in the assembled JAR.
 
 ## Unnamed modules: 
-These are modules that do not have a module-info.java file and are created by the Java runtime when you launch an application. Unnamed modules have a special name and can access only the classes in the classpath.
+These are modules that do not have a module-info.java file and are created by the Java runtime when you launch an application. When a class or JAR is loaded onto the classpath, but not the module path, it's automatically added to the unnamed module. It's a catch-all module to maintain backward compatibility with previously-written Java code.
 
 ## Platform modules: 
-These are modules that are included in the Java SE platform and are used to define the core functionality of the Java runtime. Platform modules are named and are not intended to be used by applications.
-
-## Custom modules: 
-These are modules that are created by developers to modularize their own applications. Custom modules can be either named or automatic, depending on whether they have a module-info.java file.
+These are the modules listed when we run the list-modules command above. They include the Java SE and JDK modules.
 
 # Module Declaration
 
@@ -57,22 +70,27 @@ There is also a `requires static` directive to indicate that a module is require
 
 > Test frameworks: Many Java projects use test frameworks such as JUnit or TestNG to write and run tests. These frameworks are usually only needed at development time and are not required at runtime.
 
-</details> 
+</details> ````
 
 ## requires transitive
-To specify a dependency on another module and to ensure that other modules reading your module also read that dependency—known as implied readability—use requires transitive, as in:
+To specify a dependency on another module and to ensure that other modules reading your module also read that dependency—known as implied readability—use
 
 Consider the following directive from the `java.desktop` module declaration:
+ ```
+ module java.desktop {
+requires transitive java.xml;
+}
+```
 
-> requires transitive java.xml; 
-
-In this case, any module that reads `java.desktop` also implicitly reads `java.xml`. If a method from the `java.desktop` module returns a type from the `java.xml module`, code in modules that read `java.desktop` also becomes dependent on `java.xml`. Without the `requires transitive` directive in `java.desktop`’s module declaration, such dependent modules will not compile unless they explicitly read `java.xml`.
+any module that reads `java.desktop` also implicitly reads `java.xml`. 
+If a method from the `java.desktop` module returns a type from `java.xml`, code that read `java.desktop` also becomes dependent on `java.xml`.
+Without the `requires transitive` directive in `java.desktop`’s module declaration, such dependent modules will not compile unless they explicitly read `java.xml`.
 
 
 ## exports, exports...to
-This directive specifies a package that should be made available to other modules.
+An exports module directive specifies one of the module’s packages whose public types (and their nested public and protected types) should be accessible to code in all other modules. An exports…to directive enables you to specify in a comma-separated list precisely which module’s or modules’ code can access the exported package—this is known as a qualified export.
 
-## opens, opens, opens..to: 
+## opens, opens, opens...to: 
 This directive specifies a package that should be made available to other modules for reflection, but not for regular code access. However post jdk 9, it will now give you a warning if there is any code that access platform modules
 
 > Platform modules: These are modules that are included in the Java SE platform and are used to define the core functionality of the Java runtime. Platform modules are named and are not intended to be used by applications.
@@ -90,18 +108,28 @@ deny: disables all illegal reflective access operations
 From Java 9, the –illegal-access=permit is the default mode. To use other modes, we can specify this option on the command line:
 
 ## uses: 
-This directive specifies a service that the module uses.
+A uses module directive specifies a service used by this module—making the module a service consumer. A service is an object of a class that implements the interface or extends the abstract class specified in the uses directive.
 
 ## provides...with: 
-This directive specifies a service that the module provides and the implementation class that should be used to provide the service.
+A provides…with module directive specifies that a module provides a service implementation—making the module a service provider. The provides part of the directive specifies an interface or abstract class listed in a module’s uses directive and the with part of the directive specifies the name of the service provider class that implements the interface or extends the abstract class.
 
 
+# Example project
 
-## Migrating application to use java 9 modules
+To use modules you will need a compatible version of maven compiler plugin that supports JPMS
+You will also need to make sure your java_home is set to java 9+
 
 
+run 
+```
+mvn install
+mvn spring-boot:run -pl application
 
+```
 
+# Further reading
+
+[reduce java docker image size](https://blog.monosoul.dev/2022/04/25/reduce-java-docker-image-size/)
 
 # References
 
