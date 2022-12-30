@@ -119,11 +119,27 @@ A provides…with module directive specifies that a module provides a service im
 To use modules you will need a compatible version of maven compiler plugin that supports JPMS
 You will also need to make sure your java_home is set to java 9+
 
+* Disclaimer there is actually a lot of extra work to get it working with spring and JPMS. The ecosystem and tooling is lacking
+* `mvn spring-boot:run -pl application` actually runs the project using class path method instead of module path 
 
 run 
 ```
 mvn install
 mvn spring-boot:run -pl application
+
+curl --request POST \
+  --url http://localhost:8080/book \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"author" : ["J. R. R. Tolkien"],
+	"title" : "The Hobbit",
+	"price": 25
+	
+}'
+
+curl --request GET \
+  --url http://localhost:8080/book \
+  --header 'Content-Type: application/json'
 
 ```
 
