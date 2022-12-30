@@ -1,8 +1,9 @@
 
-Intro to java modules
+# Intro to java modules
 
 Since java 9, introduced one of key feature to the java ecosystem. JPMS (java platform modules system) helps developers maintain 
 a grouping of packages into a modules, as well as common resources such as images, xml files, config files, etc.
+
 A module is a set of packages designed for reuse. It offers strong encapsulation so that a module are explicit in what they want to expose while 
 keeping its internals concealed from external use.
 
@@ -13,8 +14,10 @@ All publically exposed classes & methods are accessible only if they blue parts 
 All concealed packages, even if they are have the public modifier are not accessible outside of its package and are only accessile within java base 
 
 To see all base modules in jdk use `java --list-modules` command
+![img_2.png](img_2.png)
 
-The goal of modules 
+
+# The goal of modules 
 - scalable platform
   - Pre java 9 the Java platform was a monolith and included run time packages that might be irrelevant to your actually application. Now with java 9, you can create custom run times specific to your application. For example oracle jdk 8 includes javafx which is not required for non GUI driven applications
 - optimzation
@@ -25,10 +28,10 @@ The goal of modules
   - Before Java 9, it was possible to use many classes in the platform that were not meant for use by an app’s classes. With strong encapsulation, these internal APIs are truly encapsulated and hidden from apps using the platform. This can make migrating legacy code to modularized Java 9 problematic if your code depends on internal APIs.
 - reliable dependencies
   - Developers have long suffered with the brittle, error-prone class-path mechanism for configuring program components. The class path cannot express relationships between components, so if a necessary component is missing then that will not be discovered until an attempt is made to use it. The class path also allows classes in the same package to be loaded from different components, leading to unpredictable behavior and difficult-to-diagnose errors. The proposed specification will allow a component to declare that it depends upon other components, as other components depend upon it.
+  - Maven resolves dependencies transitively, it’s not uncommon for two versions of the same library (say, Guava 19 and Guava 18). Due to how transitive dependencies are loaded, the first loaded class wins.
 
 
-
-# Four types of modules:
+# Types of modules:
 
 ## Automatic modules:
 These are unofficial modules by adding existing JAR files to the module path. 
@@ -120,12 +123,15 @@ To use modules you will need a compatible version of maven compiler plugin that 
 You will also need to make sure your java_home is set to java 9+
 
 * Disclaimer there is actually a lot of extra work to get it working with spring and JPMS. The ecosystem and tooling is lacking
-* `mvn spring-boot:run -pl application` actually runs the project using class path method instead of module path 
+
+Build project 
+`mvn install`
 
 run using class path
 ```
-mvn install
-mvn spring-boot:run -pl application
+
+java -jar application/target/spring-boot-with-modules-application-0.0.1-SNAPSHOT.jar 
+
 
 ```
 
@@ -136,6 +142,9 @@ run using modules
 java --add-modules java.instrument --module-path=application/target/modules --module application/com.example.org.Application
 
 ```
+> `java.instrument` module is a standard module in Java 9 and later that provides support for instrumentation of Java bytecode.
+
+
 
 ```
 curl --request POST \
