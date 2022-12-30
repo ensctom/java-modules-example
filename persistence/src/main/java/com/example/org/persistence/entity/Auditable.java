@@ -1,4 +1,4 @@
-package com.example.org.model;
+package com.example.org.persistence.entity;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,7 +14,6 @@ public class Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Integer id;
-
 
     @CreatedDate
     Date createdAt;

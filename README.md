@@ -122,11 +122,22 @@ You will also need to make sure your java_home is set to java 9+
 * Disclaimer there is actually a lot of extra work to get it working with spring and JPMS. The ecosystem and tooling is lacking
 * `mvn spring-boot:run -pl application` actually runs the project using class path method instead of module path 
 
-run 
+run using class path
 ```
 mvn install
 mvn spring-boot:run -pl application
 
+```
+
+run using modules
+
+```
+
+java --add-modules java.instrument --module-path=application/target/modules --module application/com.example.org.Application
+
+```
+
+```
 curl --request POST \
   --url http://localhost:8080/book \
   --header 'Content-Type: application/json' \
@@ -146,6 +157,11 @@ curl --request GET \
 # Further reading
 
 [reduce java docker image size](https://blog.monosoul.dev/2022/04/25/reduce-java-docker-image-size/)
+https://stackoverflow.com/questions/53633788/java-lang-illegalaccesserror-cannot-access-class-because-module-does-not-export
+
+Debugging a java modules project with intellij is a challenging since by default uses classpath, need to investigate further into how 
+to run project locally using intellij
+
 
 # References
 

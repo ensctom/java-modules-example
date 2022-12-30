@@ -2,10 +2,8 @@
 package com.example.org;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.example.org.model.book")
+@SpringBootApplication(scanBasePackages = {"com.example.org.persistence.config", "com.example.org.controller"})
 public class  Application {
 
     public static void main(String[] args) {

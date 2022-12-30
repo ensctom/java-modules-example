@@ -1,6 +1,5 @@
-package com.example.org.model.book;
+package com.example.org.persistence.entity;
 
-import com.example.org.model.Auditable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

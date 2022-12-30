@@ -1,13 +1,13 @@
-open module application {
+module application {
 
     requires persistence;
     requires common;
+
     requires spring.web;
     requires spring.boot;
     requires spring.boot.autoconfigure;
     requires spring.beans;
-    requires spring.data.jpa;
-    requires spring.core;
-    requires java.sql;
 
+    opens com.example.org.controller to spring.core, spring.beans, spring.web;
+    opens com.example.org to spring.core, spring.beans, spring.context;
 }

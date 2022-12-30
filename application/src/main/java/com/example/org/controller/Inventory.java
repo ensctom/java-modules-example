@@ -2,8 +2,8 @@ package com.example.org.controller;
 
 
 import com.example.org.api.NewBookRequest;
-import com.example.org.model.book.Book;
-import com.example.org.model.book.BookRepository;
+import com.example.org.persistence.entity.Book;
+import com.example.org.persistence.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
