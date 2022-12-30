@@ -169,3 +169,4 @@ to run project locally using intellij
 - https://www.oracle.com/ca-en/corporate/features/understanding-java-9-modules.html
 - https://www.baeldung.com/java-illegal-reflective-access
 - https://dzone.com/articles/java-9-modules-part-3-directives
+- https://github.com/qutax/jpms-spring-example
